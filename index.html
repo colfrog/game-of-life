@@ -1,0 +1,25 @@
+<html>
+<head>
+ <title>game of life</title>
+ <style>
+ canvas { display: block; margin-left: auto; margin-right: auto; }
+ button { display: block; margin-left: auto; margin-right: auto; }
+ input { display: block; margin-left: auto; margin-right: auto; }
+
+ </style>
+</head>
+
+<body>
+ <canvas id="canvas" width="800" height="800"></canvas>
+ <button onclick="initCanvas(emptyTable)">empty</button>
+ <button onclick="initCanvas(randomTable)">random</button>
+ <button onclick="initCanvas(hLineTable)">horizontal line</button>
+ <button onclick="initCanvas(vLineTable)">vertical line</button>
+ <button onclick="initCanvas(crossTable)">cross</button>
+ <button onclick="initCanvas(circularTable)">circle</button>
+ <button onclick="start()">start</button>
+ <button onclick="stop()">stop</button>
+ <input type="range" min="1" max="100" value="50" class="slider" id="speedSlider"></input>
+ <script src="gol.js"></script>
+</body>
+</html>
