@@ -1,25 +1,109 @@
 <html>
 <head>
  <title>game of life</title>
+ <script src="gol.js"></script>
  <style>
- canvas { display: block; margin-left: auto; margin-right: auto; }
- button { display: block; margin-left: auto; margin-right: auto; }
- input { display: block; margin-left: auto; margin-right: auto; }
+body {
+	text-align: center;
+}
 
+#gol-root {
+	text-align: left;
+	display: inline-block;
+}
+
+#frequency-slider-container {
+	text-align: center;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.button-list {
+	display: flex;
+	flex-direction: row;
+}
  </style>
 </head>
 
 <body>
- <canvas id="canvas" width="800" height="800"></canvas>
- <button onclick="initCanvas(emptyTable)">empty</button>
- <button onclick="initCanvas(randomTable)">random</button>
- <button onclick="initCanvas(hLineTable)">horizontal line</button>
- <button onclick="initCanvas(vLineTable)">vertical line</button>
- <button onclick="initCanvas(crossTable)">cross</button>
- <button onclick="initCanvas(circularTable)">circle</button>
- <button onclick="start()">start</button>
- <button onclick="stop()">stop</button>
- <input type="range" min="1" max="100" value="50" class="slider" id="speedSlider"></input>
- <script src="gol.js"></script>
+ <div id="gol-root">
+  <canvas id="gol-canvas" width="800" height="800"></canvas>
+  <div class="button-list" id="controlButtons">
+   <button onclick="start()">start</button>
+   <button onclick="stop()">stop</button>
+  </div>
+  <div id="frequency-slider-container">
+   <p>Frequency (Hz)</p>
+   <input type="range" min="1" max="10" value="4" class="slider" id="frequency-slider"></input>
+   <div id="slider-value"></div>
+  </div>
+  <p>Presets:</p>
+  <div class="button-list" id="presets">
+   <button onclick="initCanvas(emptyTable)">empty</button>
+   <button onclick="initCanvas(randomTable)">random</button>
+   <button onclick="initCanvas(hLineTable)">horizontal line</button>
+   <button onclick="initCanvas(vLineTable)">vertical line</button>
+   <button onclick="initCanvas(crossTable)">cross</button>
+   <button onclick="initCanvas(circularTable)">circle</button>
+  </div>
+ </div>
+
+ <script>
+// Constants
+const background = '#000000';	// Colour for inactive positions
+const foreground = '#ffffff';	// Colour for active positions
+const factor = 8;		// Size factor for each pixel
+const w = 100;			// Width of the table
+const h = 100;			// Height of the table
+
+// Create the table
+var T = makeTable(w, h, emptyTable);
+var running = false;
+
+// Create the canvas
+const canvas = document.getElementById('gol-canvas');
+const ctx = canvas.getContext('2d');
+ctx.fillStyle = background;
+ctx.fillRect(0, 0, factor*w, factor*h);
+
+// Draw event on the canvas:
+// Activate the position the event is on
+function draw(e) {
+	if (!isDrawing) {
+		return;
+	}
+
+	const x = Math.floor(e.offsetX/factor);
+	const y = Math.floor(e.offsetY/factor);
+	T[x][y] = true;
+	updateCanvas(ctx, T, [[x, y]], w, h);
+}
+
+// Add the events for the drawing function
+var isDrawing = false;
+canvas.addEventListener('mousemove', draw);
+canvas.addEventListener('mousedown', (e) => {
+	isDrawing = true;
+	draw(e);
+});
+canvas.addEventListener('mouseup', () => isDrawing = false);
+canvas.addEventListener('mouseout', () => isDrawing = false);
+
+// Update interval
+var ival = setInterval(step, 500);
+
+// Slider to change the update interval
+var slider = document.getElementById('frequency-slider');
+// Modify the interval when the slider's value changes
+slider.oninput = () => {
+	let period = 1000/(slider.value);
+	console.log(period);
+	clearInterval(ival);
+	ival = setInterval(step, period);
+	document.getElementById('slider-value').innerHTML = '<p>' + slider.value + 'Hz</p>';
+};
+slider.oninput();
+ </script>
 </body>
 </html>
